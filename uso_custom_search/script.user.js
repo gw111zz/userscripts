@@ -8,6 +8,7 @@
 // @require        http://updater.usotools.co.cc/88396.js
 // ==/UserScript==
 
+
 var CONFIG = {
   // Prepend this to the search query.
   prepend: '',
