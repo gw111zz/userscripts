@@ -10,9 +10,9 @@
 // @license        GNU GPL v3.0 or later. http://www.gnu.org/copyleft/gpl.html
 // ==/UserScript==
 
-const PLAYER = unsafeWindow.document.getElementById('movie_player');
-const VIDEO_ID = unsafeWindow.yt.getConfig('VIDEO_ID');
-var caption_array = [];
+var PLAYER        = unsafeWindow.document.getElementById('movie_player'),
+    VIDEO_ID      = unsafeWindow.yt.getConfig('VIDEO_ID'),
+    caption_array = [];
 
 var makeTimeline = function (time) {
   var string,
