@@ -4,7 +4,6 @@
 // @include        http://*youtube.com/watch*
 // @include        https://*youtube.com/watch*
 // @require        http://updater.usotools.co.cc/50003.js
-// @require        http://translate.usotools.co.cc/3.jsonp?var=uso_translate
 // @author         Tim Smart
 // @copyright      2009 Tim Smart
 // @license        GNU GPL v3.0 or later. http://www.gnu.org/copyleft/gpl.html
@@ -98,7 +97,7 @@ function loadCaptions (select) {
     url:    'http://video.google.com/timedtext?hl=en&v=' + VIDEO_ID + '&type=list',
     onload: function( xhr ) {
       if (xhr.responseText === "") {
-        return select.options[0].textContent = uso_translate['no_captions'];
+        return select.options[0].textContent = 'No captions.';
       }
 
       var caption, option, caption_info,
@@ -120,7 +119,7 @@ function loadCaptions (select) {
         select.appendChild(option);
       };
 
-      select.options[0].textContent = uso_translate['download'];
+      select.options[0].textContent = 'Download captions.';
       select.disabled               = false;
     }
   });
@@ -137,7 +136,7 @@ function loadCaptions (select) {
   select.id       = 'captions_selector';
   select.disabled = true;
 
-  option.textContent = uso_translate['loading'];
+  option.textContent = 'Loading...';
   option.selected    = true;
 
   select.appendChild(option);
