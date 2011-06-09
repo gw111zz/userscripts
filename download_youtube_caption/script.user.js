@@ -9,6 +9,7 @@
 // @license        GNU GPL v3.0 or later. http://www.gnu.org/copyleft/gpl.html
 // ==/UserScript==
 
+
 var PLAYER        = unsafeWindow.document.getElementById('movie_player'),
     VIDEO_ID      = unsafeWindow.yt.getConfig('VIDEO_ID'),
     caption_array = [];
