@@ -11,7 +11,7 @@
 var api = new USO.Gmail()
 
 api.on('view:cv', function () {
-  var view  = this.active_view
+  var view  = this.view
     , older = view.ownerDocument.evaluate
       ( ".//span[contains(., 'Older') and @role='link']"
       , view

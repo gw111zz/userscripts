@@ -12,7 +12,7 @@
 var api = new USO.Gmail()
 
 api.on('view:cv', function () {
-  var view  = this.active_view
+  var view  = this.view
     , links = view.ownerDocument.evaluate
       ( './/span[contains(., "show details")]'
       , view

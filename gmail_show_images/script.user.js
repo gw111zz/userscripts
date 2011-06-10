@@ -10,7 +10,7 @@
 var api = new USO.Gmail()
 
 api.on('view:cv', function () {
-  var view = this.active_view
+  var view = this.view
     , span = view.ownerDocument.evaluate
       ( ".//span[contains(., 'Always display images from ')]"
       , view

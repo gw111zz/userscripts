@@ -10,11 +10,11 @@
 var api = new USO.Gmail()
 
 api.on('view:cv', function () {
-  this.active_view.addEventListener('DOMNodeInserted', onNodeInsert, false)
+  this.view.addEventListener('DOMNodeInserted', onNodeInsert, false)
 })
 
 var onNodeInsert = function onNodeInsert () {
-  if (api.view !== 'cv') {
+  if (api.view_type !== 'cv') {
     return this.removeEventListener('DOMNodeInserted', onNodeInsert, false)
   }
 
