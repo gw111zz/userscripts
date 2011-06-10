@@ -129,7 +129,7 @@ if (typeof USO !== 'object') {
     return this.window.gmonkey.info(this.version)
   })
 
-  G.prototype.__defineGetter__('view', function () {
+  G.prototype.__defineGetter__('view_type', function () {
     return this.api.getActiveViewType()
   })
 
@@ -137,7 +137,7 @@ if (typeof USO !== 'object') {
     return this.api.getCanvasElement()
   })
 
-  G.prototype.__defineGetter__('active_view', function () {
+  G.prototype.__defineGetter__('view', function () {
     return this.api.getActiveViewElement()
   })
 
