@@ -58,13 +58,13 @@ if (typeof USO !== 'object') {
 
     this.on('loaded:api', function () {
       this.api.registerViewChangeCallback(function () {
-        var view = script.view
+        var view = gmail.view
 
         if (!view) {
           return
-        } else if (!script.loaded) {
-          script.loaded = true
-          gmail.emit('loaded', script.api)
+        } else if (!gmail.loaded) {
+          gmail.loaded = true
+          gmail.emit('loaded', gmail.api)
         }
 
         gmail.emit('view:change', view)
