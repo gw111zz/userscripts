@@ -171,7 +171,7 @@ USO.Gmail = function (options) {
     click.initMouseEvent
       ( 'click', true, true
       , document.defaultView
-      , 1, 0, 0, 0, 0, 
+      , 1, 0, 0, 0, 0
       , false, false, false, false
       , 0, null
       )
