@@ -30,52 +30,52 @@ if (typeof USO !== 'object') {
   var USO = {}
 }
 
-USO.Gmail = function (options) {
-  this.window  = unsafeWindow || window
-  this.api     = null
-  this.version = options.version || 2
-  this._events = {}
-  this.loaded  = false
+(function (USO) {
+  var G = USO.Gmail = function Gmail (options) {
+    options || (options = {})
 
-  var gmail = this
+    this.window  = unsafeWindow || window
+    this.api     = null
+    this.version = options.version || 2
+    this._events = {}
+    this.loaded  = false
 
-  try {
-    if (  this.window.gmonkey
-       && 'function' === typeof this.window.gmonkey.load) {
-      var gmonkey = this.window.gmonkey
+    var gmail = this
 
-      gmonkey.load(this.version, function (api) {
-        gmail.api = api
-        gmail.emit('loaded:api', api)
-      })
-    }
-  } catch (err) {
-    this.emit('error', err)
-  }
+    try {
+      if (  this.window.gmonkey
+         && 'function' === typeof this.window.gmonkey.load) {
+        var gmonkey = this.window.gmonkey
 
-  this.on('loaded:api', function () {
-    this.api.registerViewChangeCallback(function () {
-      var view = script.view
-
-      if (!view) {
-        return
-      } else if (!script.loaded) {
-        script.loaded = true
-        gmail.emit('loaded', script.api)
+        gmonkey.load(this.version, function (api) {
+          gmail.api = api
+          gmail.emit('loaded:api', api)
+        })
       }
+    } catch (err) {
+      this.emit('error', err)
+    }
 
-      gmail.emit('view:change', view)
-      gmail.emit('view:' + view)
+    this.on('loaded:api', function () {
+      this.api.registerViewChangeCallback(function () {
+        var view = script.view
+
+        if (!view) {
+          return
+        } else if (!script.loaded) {
+          script.loaded = true
+          gmail.emit('loaded', script.api)
+        }
+
+        gmail.emit('view:change', view)
+        gmail.emit('view:' + view)
+      })
+
+      this.api.registerProfileCardCallback(function (e) {
+        gmail.emit('profilecard:change', e)
+      })
     })
-
-    this.api.registerProfileCardCallback(function (e) {
-      gmail.emit('profilecard:change', e)
-    })
-  })
-}
-
-(function () {
-  var G = USO.Gmail
+  }
 
   var convertToArray = function (thing) {
     var arr = []
@@ -179,4 +179,4 @@ USO.Gmail = function (options) {
 
     return this
   }
-})()
+})(USO);
