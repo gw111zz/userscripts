@@ -58,7 +58,7 @@ if (typeof USO !== 'object') {
 
     this.on('loaded:api', function () {
       this.api.registerViewChangeCallback(function () {
-        var view = gmail.view
+        var view = gmail.view_type
 
         if (!view) {
           return
