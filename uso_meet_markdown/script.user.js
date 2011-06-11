@@ -208,7 +208,7 @@ Editor = (function() {
     if (modify) {
       html = modify(html);
     }
-    return textarea.value = htmlToMarkdown(html);
+    return this.textarea.value = htmlToMarkdown(html);
   };
   Editor.prototype.ensureElement = function() {
     if (!this.element) {

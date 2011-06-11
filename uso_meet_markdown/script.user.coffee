@@ -235,7 +235,7 @@ class Editor
            "&nbsp;<a href='#posts-#{postId}'>wrote</a>:<br />#{html}</blockquote>"
 
     html = modify html if modify
-    textarea.value = htmlToMarkdown html
+    @textarea.value = htmlToMarkdown html
 
   # This is used by the insertQuote function to see whether we are currently
   # in a reply or not. If we are not in a reply, it will open a reply box. If
