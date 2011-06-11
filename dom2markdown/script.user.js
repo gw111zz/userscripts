@@ -229,10 +229,6 @@ function Node (root, parent, dom) {
   }
 
   this.parseChildren()
-
-  if (this.lines.length === 0) {
-    this.parent.remove(this)
-  }
 }
 
 Node.prototype.parseChildren = function () {
@@ -398,8 +394,15 @@ Root.prototype.remove = function (node) {
 
 Root.prototype.compile = function () {
   var node
+    , nodes = this.all.slice(0)
 
-  for (var i = 0, il = this.all.length; i < il; i++) {
+  for (var i = 0, il = nodes.length; i < il; i++) {
+    node = nodes[i]
+    if (node.lines.length === 0) {
+      node.parent.remove(node)
+    }
+  }
+  for (i = 0, il = this.all.length; i < il; i++) {
     node      = this.all[i]
     node.prev = this.all[i - 1] || node.prev
     node.next = this.all[i + 1] || node.next
