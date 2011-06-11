@@ -57,11 +57,12 @@ function getElements (dom, type) {
     )
 }
 
-function textWrapElements (xpath, wrap) {
+function textWrapElements (parser, xpath, wrap) {
   var element, text
 
   for (var i = 0; i < xpath.snapshotLength; i++) {
     element = xpath.snapshotItem(i)
+    parser.sanitize(element)
     text    = document.createTextNode(wrap + element.textContent + wrap)
     element.parentNode.replaceChild(text, element)
   }
@@ -84,7 +85,7 @@ Parser.prototype.parse = function () {
   return root
 }
 
-Parser.prototype.sanitize = function () {
+Parser.prototype.sanitize = function (dom) {
   var imgs, img, src, alt, title
     , links, link, href
     , texts, text, next
@@ -92,13 +93,13 @@ Parser.prototype.sanitize = function () {
     , brs, br, prev
 
   // Parse out strongs
-  textWrapElements(getElements(this.dom, 'strong'), '**')
+  textWrapElements(this, getElements(dom, 'strong'), '**')
 
   // Parse out em
-  textWrapElements(getElements(this.dom, 'em'), '*')
+  textWrapElements(this, getElements(dom, 'em'), '*')
 
   // Codes
-  codes = getElements(this.dom, 'code')
+  codes = getElements(dom, 'code')
   for (var i = 0; i < codes.snapshotLength; i++) {
     code = codes.snapshotItem(i)
     if (code.parentNode.nodeName === 'PRE') {
@@ -111,9 +112,11 @@ Parser.prototype.sanitize = function () {
   }
 
   // Images
-  imgs = getElements(this.dom, 'img')
+  imgs = getElements(dom, 'img')
   for (i = 0; i < imgs.snapshotLength; i++) {
     img   = imgs.snapshotItem(i)
+    this.sanitize(img)
+
     src   = img.getAttribute('src')
     alt   = img.getAttribute('alt') || ''
     title = img.getAttribute('title')
@@ -125,7 +128,7 @@ Parser.prototype.sanitize = function () {
   }
 
   // Links. Assume they have nothing complex in them.
-  links = getElements(this.dom, 'a')
+  links = getElements(dom, 'a')
   for (i = 0; i < links.snapshotLength; i++) {
     link = links.snapshotItem(i)
     href = link.getAttribute('href')
@@ -138,7 +141,7 @@ Parser.prototype.sanitize = function () {
   }
 
   // Merge text elements together
-  texts = getTexts(this.dom)
+  texts = getTexts(dom)
   for (i = 0; i < texts.snapshotLength; i++) {
     text = texts.snapshotItem(i)
 
@@ -149,11 +152,11 @@ Parser.prototype.sanitize = function () {
       next = text.nextSibling
     }
 
-    texts = getTexts(this.dom)
+    texts = getTexts(dom)
   }
 
   // Clean texts
-  texts = getTexts(this.dom)
+  texts = getTexts(dom)
   for (i = 0; i < texts.snapshotLength; i++) {
     text             = texts.snapshotItem(i)
     text.textContent = text.textContent.trim()
@@ -164,7 +167,7 @@ Parser.prototype.sanitize = function () {
   }
 
   // <br />
-  brs = getElements(this.dom, 'br')
+  brs = getElements(dom, 'br')
   for (i = 0; i < brs.snapshotLength; i++) {
     br   = brs.snapshotItem(i)
     prev = br.previousSibling
