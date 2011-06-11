@@ -1,5 +1,6 @@
 // ==UserScript==
 // @name           dom2markdown
+// @description    Converts some dom elements to markdown.
 // @namespace      http://userscripts.org/users/tim
 // @copyright      (c) 2011 Tim Smart
 // @license        MIT (See top of file)
