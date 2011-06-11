@@ -170,6 +170,9 @@ Editor = (function() {
       this.modifyEntryContainer(this.element);
       this.textarea = document.getElementById('edit_post_body');
       this.addShortcuts(this.textarea);
+      this.element.getElementsByTagName('form')[0].elements[3].addEventListener('click', __bind(function() {
+        return textarea.value = markdownToHtml(textarea.value);
+      }, this), false);
       return this.textarea.value = htmlToMarkdown(this.textarea.value);
     }, this);
     this.modifyEntryContainer(this.element);
