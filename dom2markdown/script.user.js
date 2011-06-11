@@ -361,13 +361,9 @@ Node.prototype.compile = function () {
   var first = this.lines[0]
     , last  = this.lines[this.lines.length - 1]
 
-  first.top   = true
-  last.bottom = true
-
-  if (1 < this.lines.length) {
-    first.absorb_bottom = true
-    last.absorb_top     = true
-  }
+  first.top           = true
+  first.important_top = true
+  last.bottom         = true
 }
 
 // --------------------
@@ -545,6 +541,16 @@ function CODE (root, parent, dom) {
 CODE.prototype.__proto__ = Node.prototype
 NODES.CODE               = CODE
 
+CODE.prototype.parseText = function (text) {
+  var lines = text.split('\n')
+    , line
+
+  for (var i = 0, il = lines.length; i < il; i++) {
+    line = lines[i]
+    this.addLine(line)
+  }
+}
+
 CODE.prototype.compile = function () {}
 
 // --------------------
@@ -578,10 +584,6 @@ BLOCKQUOTE.prototype.compile = function () {
     line = this.lines[i]
     line.indent.unshift('> ')
   }
-
-  if (this.prev.in.BLOCKQUOTE) {
-    this.lines[0].important_top = true
-  }
 }
 
 // --------------------
@@ -589,6 +591,7 @@ BLOCKQUOTE.prototype.compile = function () {
 function UL (root, parent, dom) {
   this.items = []
   this.indent = '  '
+
   Node.call(this, root, parent, dom)
 }
 
@@ -597,6 +600,12 @@ NODES.UL               = UL
 
 UL.prototype.bullet = function () {
   return '* '
+}
+
+UL.prototype.compile = function () {
+  if (this.list) {
+    this.lines[this.lines.length - 1].bottom = false
+  }
 }
 
 // --------------------
@@ -632,9 +641,8 @@ LI.prototype.__proto__ = Node.prototype
 NODES.LI               = LI
 
 LI.prototype.compile = function () {
-  var lines      = this.lines.slice(0)
-    , first      = lines.shift()
-    , prev_lines = this.prev.lines
+  var lines = this.lines.slice(0)
+    , first = lines.shift()
     , line
 
   first.indent.unshift(this.list.bullet())
