@@ -320,7 +320,9 @@ Node.prototype.toString = function () {
 
     if (line.top && !prev.absorb_bottom && !in_pad) {
       if (prev.important_bottom) {
-        lines.push(prev.indent.slice(0, -1).join(''))
+        lines.push(prev.indent.join(''))
+      } else if (line.top === 'INDENT') {
+        lines.push(line.indent.join(''))
       } else {
         lines.push(line.indent.slice(0, -1).join(''))
       }
@@ -343,7 +345,9 @@ Node.prototype.toString = function () {
       in_pad = true
 
       if (next.important_top) {
-        lines.push(next.indent.slice(0, -1).join(''))
+        lines.push(next.indent.join(''))
+      } else if (line.bottom === 'INDENT') {
+        lines.push(line.indent.join(''))
       } else {
         lines.push(line.indent.slice(0, -1).join(''))
       }
@@ -357,9 +361,8 @@ Node.prototype.compile = function () {
   var first = this.lines[0]
     , last  = this.lines[this.lines.length - 1]
 
-  first.top           = true
-  first.important_top = true
-  last.bottom         = true
+  first.top   = true
+  last.bottom = true
 }
 
 // --------------------
@@ -493,6 +496,13 @@ function P (root, parent, dom) {
 P.prototype.__proto__ = Node.prototype
 NODES.P               = P
 
+P.prototype.compile = function () {
+  Node.prototype.compile.call(this)
+
+  this.lines[0].top                        = 'INDENT'
+  this.lines[this.lines.length - 1].bottom = 'INDENT'
+}
+
 // --------------------
 
 function Header (root, parent, dom) {
@@ -587,6 +597,8 @@ BLOCKQUOTE.prototype.compile = function () {
     line = this.lines[i]
     line.indent.unshift('> ')
   }
+
+  this.lines[this.lines.length - 1].important_bottom = true
 }
 
 // --------------------
@@ -646,7 +658,7 @@ NODES.LI               = LI
 LI.prototype.compile = function () {
   var lines = this.lines.slice(0)
     , first = lines.shift()
-    , line
+    , line, last
 
   first.indent.unshift(this.list.bullet())
   first.top = false
@@ -658,6 +670,11 @@ LI.prototype.compile = function () {
   for (var i = 0, il = lines.length; i < il; i++) {
     line = lines[i]
     line.indent.unshift(this.list.indent)
+  }
+
+  last = lines.pop() || first
+  if (last.bottom === 'INDENT') {
+    last.bottom = true
   }
 }
 
