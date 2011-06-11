@@ -182,13 +182,14 @@ class Editor
       @modifyEntryContainer @element
 
       @textarea = document.getElementById 'edit_post_body'
+      textarea  = @textarea
       @addShortcuts @textarea
 
       # Modify the submit button to convert the textarea
       # content before sending it off to USO
       @element.getElementsByTagName('form')[0].
                elements[3].
-               addEventListener('click', =>
+               addEventListener('click', ->
          textarea.value = markdownToHtml textarea.value
       , false)
       @textarea.value = htmlToMarkdown @textarea.value

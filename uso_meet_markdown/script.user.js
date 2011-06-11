@@ -165,14 +165,16 @@ Editor = (function() {
     var form, oldReplyInit, oldSetReplyId, textarea;
     oldSetReplyId = unsafeWindow.EditForm.setReplyId;
     unsafeWindow.EditForm.setReplyId = __bind(function() {
+      var textarea;
       oldSetReplyId.apply(unsafeWindow.EditForm, arguments);
       this.element = document.getElementById('edit');
       this.modifyEntryContainer(this.element);
       this.textarea = document.getElementById('edit_post_body');
+      textarea = this.textarea;
       this.addShortcuts(this.textarea);
-      this.element.getElementsByTagName('form')[0].elements[3].addEventListener('click', __bind(function() {
+      this.element.getElementsByTagName('form')[0].elements[3].addEventListener('click', function() {
         return textarea.value = markdownToHtml(textarea.value);
-      }, this), false);
+      }, false);
       return this.textarea.value = htmlToMarkdown(this.textarea.value);
     }, this);
     this.modifyEntryContainer(this.element);
