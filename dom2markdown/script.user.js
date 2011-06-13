@@ -216,10 +216,10 @@ function Node (root, parent, dom) {
   this.level    = parent.level + 1
   this.children = []
   this.lines    = []
-  this.in       = {}
+  this.within   = {}
 
-  this.in[dom.nodeName]        = true
-  this.in[parent.dom.nodeName] = true
+  this.within[dom.nodeName]        = true
+  this.within[parent.dom.nodeName] = true
 
   // Lists
   if (parent instanceof UL || parent instanceof OL) {
