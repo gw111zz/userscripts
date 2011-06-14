@@ -534,6 +534,16 @@ function PRE (root, parent, dom) {
 PRE.prototype.__proto__ = Node.prototype
 NODES.PRE               = PRE
 
+PRE.prototype.parseText = function (text) {
+  var lines = text.split('\n')
+    , line
+
+  for (var i = 0, il = lines.length; i < il; i++) {
+    line = lines[i]
+    this.addLine(line)
+  }
+}
+
 PRE.prototype.compile = function () {
   Node.prototype.compile.call(this)
 
@@ -551,18 +561,8 @@ function CODE (root, parent, dom) {
   Node.call(this, root, parent, dom)
 }
 
-CODE.prototype.__proto__ = Node.prototype
+CODE.prototype.__proto__ = PRE.prototype
 NODES.CODE               = CODE
-
-CODE.prototype.parseText = function (text) {
-  var lines = text.split('\n')
-    , line
-
-  for (var i = 0, il = lines.length; i < il; i++) {
-    line = lines[i]
-    this.addLine(line)
-  }
-}
 
 CODE.prototype.compile = function () {}
 
