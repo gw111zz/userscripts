@@ -85,8 +85,8 @@ Parser.prototype.parse = function () {
   return root
 }
 
-function markdownEntityReplace ($0, $1, $2) {
-  return $1 + '\\' + $2
+function markdownEntityReplace ($0) {
+  return '\\' + $0
 }
 
 Parser.prototype.sanitize = function (dom) {
@@ -95,6 +95,16 @@ Parser.prototype.sanitize = function (dom) {
     , texts, text, next
     , codes, code
     , brs, br, prev
+    , i
+
+  // Clean entities first
+  texts = getTexts(dom)
+  for (i = 0; i < texts.snapshotLength; i++) {
+    text = texts.snapshotItem(i)
+    text.textContent = text
+      .textContent
+      .replace(/[_*]/g, markdownEntityReplace)
+  }
 
   // Parse out strongs
   textWrapElements(this, getElements(dom, 'strong'), '**')
@@ -104,7 +114,7 @@ Parser.prototype.sanitize = function (dom) {
 
   // Codes
   codes = getElements(dom, 'code')
-  for (var i = 0; i < codes.snapshotLength; i++) {
+  for (i = 0; i < codes.snapshotLength; i++) {
     code = codes.snapshotItem(i)
     if (code.parentNode.nodeName === 'PRE') {
       html             = code.innerHTML
@@ -164,7 +174,6 @@ Parser.prototype.sanitize = function (dom) {
   for (i = 0; i < texts.snapshotLength; i++) {
     text             = texts.snapshotItem(i)
     text.textContent = text.textContent.trim()
-      .replace(/(^|[^\\])([_*])/g, markdownEntityReplace)
 
     if ('' === text.textContent) {
       text.parentNode.removeChild(text)
@@ -695,4 +704,5 @@ USO.dom2markdown = function (dom) {
 }
 
 })(USO);
+
 
