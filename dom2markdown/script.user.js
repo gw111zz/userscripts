@@ -86,7 +86,7 @@ Parser.prototype.parse = function () {
 }
 
 function markdownEntityReplace ($0, $1, $2) {
-  return $1 + '//' + $2
+  return $1 + '\\' + $2
 }
 
 Parser.prototype.sanitize = function (dom) {
