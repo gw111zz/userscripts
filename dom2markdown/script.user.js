@@ -85,6 +85,10 @@ Parser.prototype.parse = function () {
   return root
 }
 
+function markdownEntityReplace ($0, $1, $2) {
+  return $1 + '//' + $2
+}
+
 Parser.prototype.sanitize = function (dom) {
   var imgs, img, src, alt, title
     , links, link, href
@@ -160,6 +164,7 @@ Parser.prototype.sanitize = function (dom) {
   for (i = 0; i < texts.snapshotLength; i++) {
     text             = texts.snapshotItem(i)
     text.textContent = text.textContent.trim()
+      .replace(/(^|[^\\])([_*])/g, markdownEntityReplace)
 
     if ('' === text.textContent) {
       text.parentNode.removeChild(text)
