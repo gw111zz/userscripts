@@ -161,6 +161,23 @@ if (typeof USO !== 'object') {
     return this.api.getFooterElement()
   })
 
+  // Current message & thread. Got no idea how reliable these are...
+  G.prototype.__defineGetter__('thread', function () {
+    var thread = this.api.getCurrentThread()
+
+    if (thread.ik && thread.wa) {
+      thread.id   = thread.ik
+      thread.node = thread.wa
+    }
+
+    return thread
+  })
+
+  // Google hasn't got around to returning meaningful properties yet...
+  G.prototype.__defineGetter__('message', function () {
+    return this.api.getCurrentMessage()
+  })
+
   G.prototype.addNavModule = function (title, content, color) {
     return this.api.addNavModule(title, content, color)
   }
