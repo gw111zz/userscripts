@@ -101,6 +101,10 @@ Parser.prototype.sanitize = function (dom) {
   texts = getTexts(dom)
   for (i = 0; i < texts.snapshotLength; i++) {
     text = texts.snapshotItem(i)
+    if (  text.parentNode.nodeName === 'CODE'
+       || text.parentNode.nodeName === 'PRE') {
+      continue
+    }
     text.textContent = text
       .textContent
       .replace(/[_*]/g, markdownEntityReplace)
