@@ -95,12 +95,29 @@ Parser.prototype.sanitize = function (dom) {
     , texts, text, next
     , codes, code
     , brs, br, prev
-    , i
+    , i, pre_texts, arr
 
   // Clean entities first
+  arr       = []
+  pre_texts = document.evaluate
+    ( ".//pre//text()"
+    , dom
+    , null
+    , XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+    , null
+    )
   texts = getTexts(dom)
+
+  for (i = 0; i < pre_texts.snapshotLength; i++) {
+    arr.push(pre_texts.snapshotItem(i))
+  }
+  pre_texts = arr
+
   for (i = 0; i < texts.snapshotLength; i++) {
     text = texts.snapshotItem(i)
+    if (pre_texts.indexOf(text)) {
+      continue
+    }
     text.textContent = text
       .textContent
       .replace(/[_*]/g, markdownEntityReplace)
@@ -197,8 +214,8 @@ Parser.prototype.sanitize = function (dom) {
   }
 
   // Lose the element references
-  links = imgs = texts
-        = codes = brs = null
+  links = imgs = texts = pre_texts
+        = arr = codes = brs = null
 }
 
 // --------------------
@@ -704,5 +721,4 @@ USO.dom2markdown = function (dom) {
 }
 
 })(USO);
-
 
