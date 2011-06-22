@@ -237,6 +237,26 @@ class Editor
     html = modify html if modify
     @textarea.value = htmlToMarkdown html
 
+  # Insert text at the caret position
+  insertAtCaret: (text) ->
+    start = @textarea.selectionStart
+    end   = @textarea.selectionEnd
+    if 'number' isnt typeof start or 'number' isnt typeof end
+      start = end = @textarea.value.length
+    @insertText text, start, end
+    this
+
+  # Insert some text at the specified position
+  insertText: (text, start, end) ->
+    end or= start
+    pos = @textarea.selectionStart
+    val = @textarea.value
+    val = val.slice(0, start) + text + val.slice end
+    @textarea.value = val
+    if 'number' is typeof pos
+      @textarea.selectionStart = @textarea.selectionEnd = pos + text.length
+    this
+
   # This is used by the insertQuote function to see whether we are currently
   # in a reply or not. If we are not in a reply, it will open a reply box. If
   # we are in a edit or reply, it just returns true
@@ -256,8 +276,33 @@ class Editor
 
   # Adds the follow keyboard shortcuts
   #
-  # * Nothing yet!
+  # * Tab to 2 spaces
+  #
+  # TODO : Enter to continue indent
   addShortcuts: (textarea) ->
+    editor = this
+    textarea.addEventListener 'keydown', (event) ->
+      switch event.keyCode
+        when 9
+          event.preventDefault()
+          editor.insertAtCaret '  '
+        when 13
+          event.preventDefault()
+          editor.newline()
+    , false
+
+  # Most likely the enter key was pressed.
+  #
+  # Properly create indentation on the next line
+  newline: ->
+    pos = @textarea.selectionStart
+    if pos < 1
+      return @insertAtCaret '\n'
+
+    last_line = (@textarea.value.slice 0, pos).lastIndexOf '\n'
+    indent = /^(?:\s|>)*/.exec(@textarea.value.slice last_line + 1, pos)
+    @insertAtCaret '\n' + indent
+
 
 #### Page class
 # Represents a page on USO, depending on the URI. It will add all

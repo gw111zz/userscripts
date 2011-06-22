@@ -210,6 +210,28 @@ Editor = (function() {
     }
     return this.textarea.value = htmlToMarkdown(html);
   };
+  Editor.prototype.insertAtCaret = function(text) {
+    var end, start;
+    start = this.textarea.selectionStart;
+    end = this.textarea.selectionEnd;
+    if ('number' !== typeof start || 'number' !== typeof end) {
+      start = end = this.textarea.value.length;
+    }
+    this.insertText(text, start, end);
+    return this;
+  };
+  Editor.prototype.insertText = function(text, start, end) {
+    var pos, val;
+    end || (end = start);
+    pos = this.textarea.selectionStart;
+    val = this.textarea.value;
+    val = val.slice(0, start) + text + val.slice(end);
+    this.textarea.value = val;
+    if ('number' === typeof pos) {
+      this.textarea.selectionStart = this.textarea.selectionEnd = pos + text.length;
+    }
+    return this;
+  };
   Editor.prototype.ensureElement = function() {
     if (!this.element) {
       this.openReply();
@@ -224,7 +246,30 @@ Editor = (function() {
   Editor.prototype.openReply = function() {
     return unsafeWindow.ReplyForm.init();
   };
-  Editor.prototype.addShortcuts = function(textarea) {};
+  Editor.prototype.addShortcuts = function(textarea) {
+    var editor;
+    editor = this;
+    return textarea.addEventListener('keydown', function(event) {
+      switch (event.keyCode) {
+        case 9:
+          event.preventDefault();
+          return editor.insertAtCaret('  ');
+        case 13:
+          event.preventDefault();
+          return editor.newline();
+      }
+    }, false);
+  };
+  Editor.prototype.newline = function() {
+    var indent, last_line, pos;
+    pos = this.textarea.selectionStart;
+    if (pos < 1) {
+      return this.insertAtCaret('\n');
+    }
+    last_line = (this.textarea.value.slice(0, pos)).lastIndexOf('\n');
+    indent = /^(?:\s|>)*/.exec(this.textarea.value.slice(last_line + 1, pos));
+    return this.insertAtCaret('\n' + indent);
+  };
   return Editor;
 })();
 Page = (function() {
