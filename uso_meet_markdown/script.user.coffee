@@ -274,11 +274,12 @@ class Editor
   openReply: ->
     unsafeWindow.ReplyForm.init()
 
-  # Adds the follow keyboard shortcuts
+  # Adds the following keyboard shortcuts
+  # TODO : Fix scrolling when enter is pressed.
   #
   # * Tab to 2 spaces
+  # * Enter for indented new line
   #
-  # TODO : Enter to continue indent
   addShortcuts: (textarea) ->
     editor = this
     textarea.addEventListener 'keydown', (event) ->
