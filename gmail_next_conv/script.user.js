@@ -8,18 +8,24 @@
 // @require        http://userscripts.org/scripts/source/56812.user.js
 // ==/UserScript==
 
-var api = new USO.Gmail()
+var api   = new USO.Gmail()
+  , older = null
 
-api.on('view:cv', function () {
+api.on('view', function () {
+  older = view.ownerDocument.evaluate
+  ( ".//span[contains(., 'Older') and @role='link']"
+  , view
+  , null
+  , XPathResult.FIRST_ORDERED_NODE_TYPE
+  , null
+  )
+  .singleNodeValue
+
+  if (!older) {
+    return
+  }
+
   var view  = this.view
-    , older = view.ownerDocument.evaluate
-      ( ".//span[contains(., 'Older') and @role='link']"
-      , view
-      , null
-      , XPathResult.FIRST_ORDERED_NODE_TYPE
-      , null
-      )
-      .singleNodeValue
     , buttons = view.ownerDocument.evaluate
       ( ".//div[(contains(., 'Archive') or contains(., 'Delete')) and @role='button']"
       , view
@@ -29,18 +35,48 @@ api.on('view:cv', function () {
       )
     , button
 
-  if (!older || 4 !== buttons.snapshotLength) {
+  if (4 !== buttons.length) {
     return
   }
 
   for (var i = 0; i < buttons.snapshotLength; i++) {
     button = buttons.snapshotItem(i)
-    button.addEventListener('mouseup', function () {
-      unsafeWindow.console.log('MOUSEUP')
-      if (!older) {
-        return
+    button.addEventListener
+    ( 'mouseup', function () {
+        if (!older) {
+          return
+        }
+        api.click(older)
       }
-      api.click(older)
-    }, false)
+    , false
+    )
   }
+})
+
+api.on('loaded', function () {
+  this
+    .canvas
+    .ownerDocument
+    .addEventListener
+    ( 'keyup', function (event) {
+        if (!older) {
+          return
+        }
+
+        switch (event.keyCode) {
+        case 69:
+          break
+        case 51:
+          if (!event.shiftKey) {
+            return
+          }
+          break
+        default:
+          return
+        }
+
+        api.click(older)
+      }
+    , false
+    )
 })
