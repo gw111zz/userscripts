@@ -59,7 +59,7 @@ api.on('loaded', function () {
     .canvas
     .ownerDocument
     .addEventListener
-    ( 'keyup', function (event) {
+    ( 'keydown', function (event) {
         if (!older) {
           return
         }
@@ -76,7 +76,7 @@ api.on('loaded', function () {
           return
         }
 
-        api.click(older)
+        setTimeout(function () { api.click(older) }, 0)
       }
     , false
     )
