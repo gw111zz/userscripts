@@ -67,12 +67,33 @@ if (typeof USO !== 'object') {
           gmail.emit('loaded', gmail.api)
         }
 
-        gmail.emit('view:change', view)
+        gmail.emit('view', view)
         gmail.emit('view:' + view)
       })
 
       this.api.registerProfileCardCallback(function (e) {
-        gmail.emit('profilecard:change', e)
+        gmail.emit('profilecard', e)
+      })
+
+      this.api.registerButterbarCallback(function () {
+        gmail.emit('butterbar')
+      })
+
+      this.api.registerMessageStateChangeCallback(function (message, state) {
+        gmail.emit('message:state', message, state)
+        // TODO : If start is always a string, message:state:{{state}}
+      })
+
+      this.api.registerMessageViewChangeCallback(function (message) {
+        gmail.emit('message:view', message)
+      })
+
+      this.api.registerThreadStateChangeCallback(function (thread, state) {
+        gmail.emit('thread:state', thread, state)
+      })
+
+      this.api.registerThreadViewChangeCallback(function (thread) {
+        gmail.emit('thread:view', thread)
       })
     })
   }
@@ -105,7 +126,7 @@ if (typeof USO !== 'object') {
       return this
     }
 
-    this._events.splice(index, 1)
+    this._events[event].splice(index, 1)
 
     return this
   }
@@ -161,21 +182,20 @@ if (typeof USO !== 'object') {
     return this.api.getFooterElement()
   })
 
-  // Current message & thread. Got no idea how reliable these are...
   G.prototype.__defineGetter__('thread', function () {
-    var thread = this.api.getCurrentThread()
-
-    if (thread.ik && thread.wa) {
-      thread.id   = thread.ik
-      thread.node = thread.wa
-    }
-
-    return thread
+    return this.api.getCurrentThread()
   })
 
-  // Google hasn't got around to returning meaningful properties yet...
   G.prototype.__defineGetter__('message', function () {
     return this.api.getCurrentMessage()
+  })
+
+  G.prototype.__defineGetter__('actions', function () {
+    return this.api.getActionElements()
+  })
+
+  G.prototype.__defineGetter__('converstation_diabled', function () {
+    return this.api.isConversationViewDisabled()
   })
 
   G.prototype.addNavModule = function (title, content, color) {
