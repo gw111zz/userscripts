@@ -11,7 +11,10 @@
 var api   = new USO.Gmail()
   , older = null
 
-api.on('view', function () {
+api.on('view:cv', function () {
+  var view = this.view
+    , buttons, button
+
   older = view.ownerDocument.evaluate
   ( ".//span[contains(., 'Older') and @role='link']"
   , view
@@ -25,15 +28,13 @@ api.on('view', function () {
     return
   }
 
-  var view  = this.view
-    , buttons = view.ownerDocument.evaluate
-      ( ".//div[(contains(., 'Archive') or contains(., 'Delete')) and @role='button']"
-      , view
-      , null
-      , XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE
-      , null
-      )
-    , button
+  buttons = view.ownerDocument.evaluate
+  ( ".//div[(contains(., 'Archive') or contains(., 'Delete')) and @role='button']"
+  , view
+  , null
+  , XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE
+  , null
+  )
 
   if (4 !== buttons.length) {
     return
