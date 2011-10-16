@@ -5,12 +5,14 @@
 // @include        https://*youtube.com/watch*
 // @require        http://updater.usotools.co.cc/50003.js
 // @author         Tim Smart
-// @copyright      2009 Tim Smart
+// @copyright      2009 Tim Smart; 2011 gw111zz
 // @license        GNU GPL v3.0 or later. http://www.gnu.org/copyleft/gpl.html
 // ==/UserScript==
 
-var PLAYER        = unsafeWindow.document.getElementById('movie_player'),
-    VIDEO_ID      = unsafeWindow.yt.getConfig('VIDEO_ID'),
+var PLAYER              = unsafeWindow.document.getElementById('movie_player'),
+    VIDEO_ID            = unsafeWindow.yt.getConfig('VIDEO_ID'),
+    FORMATS             = {srt: '.srt', text: 'text'},
+    FORMAT_SELECTOR_ID  = 'format_selector',
     caption_array = [];
 
 var makeTimeline = function (time) {
@@ -49,9 +51,10 @@ function loadCaption (selector) {
     onload:function(xhr) {
       if (xhr.responseText !== "") {
         var caption, previous_start, start, end,
-            captions   = new DOMParser().parseFromString(xhr.responseText, "text/xml").getElementsByTagName('text'),
-            textarea   = document.createElement("textarea"),
-            srt_output = '';
+            captions      = new DOMParser().parseFromString(xhr.responseText, "text/xml").getElementsByTagName('text'),
+            textarea      = document.createElement("textarea"),
+            output_format = FORMATS[document.getElementById(FORMAT_SELECTOR_ID).value] || FORMATS['srt'],
+            srt_output    = ''; 
 
         for (var i = 0, il = captions.length; i < il; i++) {
           caption = captions[i];
@@ -60,8 +63,12 @@ function loadCaption (selector) {
           if (0 <= previous_start) {
             textarea.innerHTML = captions[i - 1].textContent.replace(/</g, "&lt;").
                                                              replace( />/g, "&gt;" );
-            srt_output += i + "\n" + makeTimeline(previous_start) + ' --> ' +
-                          makeTimeline(start) + "\n" + textarea.value + "\n\n";
+            if (output_format === FORMATS['text']) {  
+                srt_output += textarea.value + "\n";
+            } else {
+                srt_output += i + "\n" + makeTimeline(previous_start) + ' --> ' +
+                              makeTimeline(start) + "\n" + textarea.value + "\n\n";
+            }
             previous_start = null;
           }
 
@@ -76,8 +83,12 @@ function loadCaption (selector) {
           }
 
           textarea.innerHTML = caption.textContent.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-          srt_output        += i + "\n" + makeTimeline(start) + ' --> ' +
-                               makeTimeline(end) + "\n" + textarea.value + "\n\n";
+          if (output_format === FORMATS['text']) {  
+              srt_output += textarea.value + "\n";
+          } else {
+            srt_output   += i + "\n" + makeTimeline(start) + ' --> ' +
+                                makeTimeline(end) + "\n" + textarea.value + "\n\n";
+          }
         };
         textarea = null;
 
@@ -99,7 +110,7 @@ function loadCaptions (select) {
       if (xhr.responseText === "") {
         return select.options[0].textContent = 'No captions.';
       }
-
+    
       var caption, option, caption_info,
           captions = new DOMParser().parseFromString(xhr.responseText, "text/xml").
                                      getElementsByTagName('track');
@@ -125,6 +136,20 @@ function loadCaptions (select) {
   });
 }
 
+function loadFormats (select) {
+
+    for (var type in FORMATS) {
+        option              = document.createElement('option');
+        option.value        = type;
+        option.textContent  = FORMATS[type];
+
+        select.appendChild(option);
+    }
+
+    select.options[0].textContent   = 'Select caption format.';
+    select.disabled                 = false;
+}
+
 (function () {
   var div      = document.createElement('div'),
       select   = document.createElement('select'),
@@ -145,7 +170,28 @@ function loadCaptions (select) {
   }, false);
 
   div.appendChild(select);
+
+
+  var format_div       = document.createElement('div'),
+      format_select    = document.createElement('select'),
+      format_option    = document.createElement('option');
+
+  format_div.setAttribute( 'style', 'display: inline-block;' );
+  
+  format_select.id         = FORMAT_SELECTOR_ID;
+  format_select.disabled   = true;
+
+  format_option.textContent    = 'Loading...';
+  format_option.selected       = true;
+
+  format_select.appendChild(format_option);
+  
+  format_div.appendChild(format_select);
+
+  controls.appendChild(format_div);
   controls.appendChild(div);
 
+  loadFormats(format_select);
   loadCaptions(select);
 })();
+
